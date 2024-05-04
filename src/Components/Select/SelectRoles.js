@@ -1,5 +1,7 @@
-import * as React from 'react';
+import {useState} from 'react';
 import { Autocomplete, TextField,FormControl, InputLabel } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFilteredListings } from '../../store/reducers/jobListingsReducer';
 
 const roles = [
   { role: 'Frontend', category: 'Engineering' },
@@ -23,13 +25,27 @@ const roles = [
 ];
 
 export default function RoleSelect() {
-  const [isInputLabelVisible, setIsInputLabelVisible] = React.useState(true);
+  const {jobListings} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
+  const [isInputLabelVisible, setIsInputLabelVisible] = useState(true);
+  const dispatch = useDispatch();
 
   const handleInputChange = (event, value, reason) => {
     if (reason === 'input') {
       setIsInputLabelVisible(false); // Hide InputLabel when user starts typing
     } else {
       setIsInputLabelVisible(!value); // Hide InputLabel when value is selected
+    }
+  };
+
+  const handleRoleChange = (event, value) => {
+    // console.log(jobListings)
+    if (value && jobListings) {
+      const role = value.role.toLowerCase();
+      console.log(role)
+      // console.log(minSalary);
+      const filteredListings = jobListings.filter(job => job.jobRole.toLowerCase().includes(role)); // Filter job listings based on minimum experience
+      dispatch(setFilteredListings(filteredListings));
+      // console.log(filteredListings);
     }
   };
 
@@ -43,7 +59,7 @@ export default function RoleSelect() {
           groupBy={(option) => option.category}
           getOptionLabel={(option) => option.role}
           renderInput={(params) => <TextField {...params} />}
-          onChange={handleInputChange}
+          onChange={handleRoleChange}
           onInputChange={handleInputChange}
           renderOption={(props, option) => (
             <div {...props}>

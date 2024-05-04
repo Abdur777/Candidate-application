@@ -54,6 +54,11 @@ const JobCard = ({ job }) => {
               )}
             </Typography>
           </Grid>
+          <Grid item xs={12}>
+              <Typography variant="subtitle1" color="text.secondary">Minimun Experiance</Typography>
+              <Typography variant="subtitle1" color="text.secondary">{job.minExp} years</Typography>
+              <Typography variant="subtitle1" color="text.secondary">{job.location}</Typography>
+          </Grid>
         {/* Apply Button */}
         <Grid item xs={12}>
           <Button variant="contained" color="primary" href={job.jobUrl} target="_blank" rel="noopener noreferrer">

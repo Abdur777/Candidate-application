@@ -4,6 +4,7 @@ const initialState = {
   jobListings: [],
   loading: false,
   error: null,
+  filteredListings: [],
 };
 
 const jobListingsSlice = createSlice({
@@ -22,9 +23,12 @@ const jobListingsSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    setFilteredListings(state, action) {
+      state.filteredListings = action.payload;
+    },
   },
 });
 
-export const { fetchJobListingsRequest, fetchJobListingsSuccess, fetchJobListingsFailure } = jobListingsSlice.actions;
+export const { fetchJobListingsRequest, fetchJobListingsSuccess, fetchJobListingsFailure, setFilteredListings} = jobListingsSlice.actions;
 
 export default jobListingsSlice.reducer;
