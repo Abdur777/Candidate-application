@@ -11,27 +11,23 @@ const remoteOptions = [
 ];
 
 export default function RemoteSelect() {
-  const {jobListings, error , loading , filteredListings, totalListings, role, minSalary, exp, location} = useSelector((state) => state.jobListings);
+  const { jobListings,totalListings,role,exp, minSalary} = useSelector((state) => state.jobListings);
   const dispatch = useDispatch();
   const [isInputLabelVisible, setIsInputLabelVisible] = React.useState(true);
 
   // Debounce the input change handler
   const debouncedHandleInputChange = React.useCallback(
     debounce((inputValue) => {
-     let filteredResults = [];
-     console.log(inputValue)
-      // if (exp!=='' && filteredListings) {
-      //   // Filter jobListings based on the company name
-      //   filteredResults = filteredListings.filter(job => job.location.toLowerCase().includes(inputValue));
-      //   dispatch(setLocation(inputValue));
-      // }
-      if(totalListings){
-        console.log(totalListings);
-        dispatch(setLocation(inputValue));
-        let filteredResults = totalListings.filter(job => job.location.toLowerCase().includes(inputValue));
-        if(exp!='') filteredResults = filteredResults.filter(job => job.minExp>=exp);
-        if(minSalary!=='') filteredResults.filter(job => job.minJdSalary >= minSalary);
+      setIsInputLabelVisible(inputValue.length === 0); // Show InputLabel only if input is empty
+      
+      let filteredResults = [];
+      if (totalListings) {
+        // Filter jobListings based on the company name
+        filteredResults = totalListings.filter(job => job.location.toLowerCase().includes(inputValue));
         if(role!=='') filteredResults = filteredResults.filter(job => job.jobRole.toLowerCase().includes(role));
+        if(exp!=='') filteredResults = filteredResults.filter(job => job.minExp >= exp);
+        if(minSalary!=='') filteredResults = filteredResults.filter(job => job.minJdSalary >= minSalary);
+        dispatch(setLocation(inputValue));
       }
   
       // Dispatch the filtered results to update the state
@@ -43,7 +39,6 @@ export default function RemoteSelect() {
   // Handle input change
   const handleInputChange = (event) => {
     const inputValue = event.target.value.trim().toLowerCase();
-    setIsInputLabelVisible(inputValue.length === 0); 
     debouncedHandleInputChange(inputValue); // Call debounced handler with input value
   };
 
