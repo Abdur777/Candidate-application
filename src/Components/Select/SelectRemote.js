@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Autocomplete, TextField, FormControl, InputLabel } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFilteredListings } from '../../store/reducers/jobListingsReducer';
+import { setFilteredListings, setLocation } from '../../store/reducers/jobListingsReducer';
+import { debounce } from 'lodash'; // Import debounce function from lodash
 
 const remoteOptions = [
   { option: 'Remote' },
@@ -10,25 +11,40 @@ const remoteOptions = [
 ];
 
 export default function RemoteSelect() {
-  const { jobListings, filteredListings } = useSelector((state) => state.jobListings);
+  const {jobListings, error , loading , filteredListings, totalListings, role, minSalary, exp, location} = useSelector((state) => state.jobListings);
   const dispatch = useDispatch();
   const [isInputLabelVisible, setIsInputLabelVisible] = React.useState(true);
 
-    const handleInputChange = (event) => {
+  // Debounce the input change handler
+  const debouncedHandleInputChange = React.useCallback(
+    debounce((inputValue) => {
+     let filteredResults = [];
+     console.log(inputValue)
+      // if (exp!=='' && filteredListings) {
+      //   // Filter jobListings based on the company name
+      //   filteredResults = filteredListings.filter(job => job.location.toLowerCase().includes(inputValue));
+      //   dispatch(setLocation(inputValue));
+      // }
+      if(totalListings){
+        console.log(totalListings);
+        dispatch(setLocation(inputValue));
+        let filteredResults = totalListings.filter(job => job.location.toLowerCase().includes(inputValue));
+        if(exp!='') filteredResults = filteredResults.filter(job => job.minExp>=exp);
+        if(minSalary!=='') filteredResults.filter(job => job.minJdSalary >= minSalary);
+        if(role!=='') filteredResults = filteredResults.filter(job => job.jobRole.toLowerCase().includes(role));
+      }
+  
+      // Dispatch the filtered results to update the state
+      dispatch(setFilteredListings(filteredResults));
+    }, 300), // Set debounce delay to 300 milliseconds
+    [dispatch, jobListings]
+  );
+
+  // Handle input change
+  const handleInputChange = (event) => {
     const inputValue = event.target.value.trim().toLowerCase();
-    setIsInputLabelVisible(inputValue.length === 0); // Show InputLabel only if input is empty
-
-    let filteredResults = [];
-    if (filteredListings && filteredListings.length > 0) {
-      // If filteredListings is not empty, filter it based on the company name
-      filteredResults = filteredListings.filter(job => job.location.toLowerCase().includes(inputValue));
-    } else if (jobListings && jobListings.length > 0) {
-      // If filteredListings is empty, filter jobListings based on the company name
-      filteredResults = jobListings.filter(job => job.location.toLowerCase().includes(inputValue));
-    }
-
-    // Dispatch the filtered results to update the state
-    dispatch(setFilteredListings(filteredResults));
+    setIsInputLabelVisible(inputValue.length === 0); 
+    debouncedHandleInputChange(inputValue); // Call debounced handler with input value
   };
 
   return (

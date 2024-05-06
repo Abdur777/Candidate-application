@@ -1,11 +1,11 @@
 import{useState} from 'react';
 import { Autocomplete, TextField, FormControl, InputLabel } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFilteredListings } from '../../store/reducers/jobListingsReducer';
+import { setFilteredListings, setMinSalary } from '../../store/reducers/jobListingsReducer';
 const salaryOptions = Array.from({ length: 71 }, (_, index) => ({ salary: index }));
 
 export default function SalarySelect() {
-  const {jobListings} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
+  const {totalListings,location,exp,role} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
   const [isInputLabelVisible, setIsInputLabelVisible] = useState(true);
   const dispatch = useDispatch();
 
@@ -19,11 +19,15 @@ export default function SalarySelect() {
 
   const handleSalaryChange = (event, value) => {
     // console.log(jobListings)
-    if (value && jobListings) {
+    if (value && totalListings) {
       const minSalary = value.salary;
       // console.log(minSalary);
-      const filteredListings = jobListings.filter(job => job.minJdSalary >= minSalary); // Filter job listings based on minimum experience
-      dispatch(setFilteredListings(filteredListings));
+      let filteredResults = totalListings.filter(job => job.minJdSalary >= minSalary); // Filter job listings based on minimum experience
+      if(location!=='') filteredResults=filteredResults.filter(job => job.location.toLowerCase().includes(location));
+      if(exp!='') filteredResults = filteredResults.filter(job => job.minExp>=exp);
+      if(role!=='') filteredResults = filteredResults.filter(job => job.jobRole.toLowerCase().includes(role));
+      dispatch(setMinSalary(minSalary));
+      dispatch(setFilteredListings(filteredResults));
       // console.log(filteredListings);
     }
   };

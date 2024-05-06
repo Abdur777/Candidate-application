@@ -5,6 +5,11 @@ const initialState = {
   loading: false,
   error: null,
   filteredListings: [],
+  totalListings: [],
+  role: "",
+  minSalary: "",
+  exp: "",
+  location: "",
 };
 
 const jobListingsSlice = createSlice({
@@ -26,9 +31,24 @@ const jobListingsSlice = createSlice({
     setFilteredListings(state, action) {
       state.filteredListings = action.payload;
     },
+    setTotalListing (state, action){
+      state.totalListings = action.payload
+    },
+    setRole (state,action){
+      state.role = action.payload
+    },
+    setMinSalary (state,action){
+      state.minSalary = action.payload
+    },
+    setExp (state,action){
+      state.exp = action.payload
+    },
+    setLocation (state,action){
+      state.location = action.payload
+    }
   },
 });
 
-export const { fetchJobListingsRequest, fetchJobListingsSuccess, fetchJobListingsFailure, setFilteredListings} = jobListingsSlice.actions;
+export const { fetchJobListingsRequest, fetchJobListingsSuccess, fetchJobListingsFailure, setFilteredListings, setTotalListing ,setRole, setMinSalary, setExp, setLocation} = jobListingsSlice.actions;
 
 export default jobListingsSlice.reducer;

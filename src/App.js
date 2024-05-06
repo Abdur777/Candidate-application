@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import AllSelect from "./Components/Select/AllSelect";
 import JobCard from './Components/JobCard/JobCard';
 import { fetchJobListings } from './store/actions/jobListingsActions';
+import { setTotalListing } from './store/reducers/jobListingsReducer';
 import { Box } from "@mui/material";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { jobListings, loading, error, filteredListings } = useSelector((state) => state.jobListings);
+  const { jobListings, loading, error, filteredListings , totalListings} = useSelector((state) => state.jobListings);
   const [page, setPage] = useState(0); // State to track current page number
   const [allJobListings, setAllJobListings] = useState([]); // State to store all job listings
 
@@ -36,7 +37,9 @@ export default function Home() {
       setAllJobListings(prevListings => [...prevListings, ...jobListings]); // Append new listings to existing ones
     }
   }, [jobListings]);
-
+  // console.log("hello")
+  dispatch(setTotalListing(allJobListings))
+  // console.log(totalListings);
   return (
     <div>
       <AllSelect />

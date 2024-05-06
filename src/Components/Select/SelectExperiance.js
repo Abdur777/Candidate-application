@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Autocomplete, TextField, FormControl, InputLabel } from '@mui/material';
 import { setFilteredListings } from '../../store/reducers/jobListingsReducer';
+import { setExp } from '../../store/reducers/jobListingsReducer';
 
 const experienceYears = Array.from({ length: 10 }, (_, index) => index + 1).map((year) => ({ year }));
 
 export default function ExperienceSelect() {
-  const {jobListings} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
+  const {jobListings, error , loading , filteredListings, totalListings, role, minSalary, exp, location} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
   const [isInputLabelVisible, setIsInputLabelVisible] = useState(true);
   const dispatch = useDispatch();
   const handleInputChange = (event, value, reason) => {
@@ -16,15 +17,33 @@ export default function ExperienceSelect() {
       setIsInputLabelVisible(!value); // Hide InputLabel when value is selected
     }
   };
-  // console.log(jobListings,"fromkjfs")
+  
   const handleExperienceChange = (event, value) => {
-    // console.log(jobListings)
-    if (value && jobListings) {
+    
+    // if (value && location && filteredListings) {
+    //   const minExperience = value.year;
+    //   var filteredResults = filteredListings.filter(job => job.minExp > minExperience); // Filter job listings based on minimum experience
+    //   // console.log(location,filteredResults,"jsbfjbsjbfs")
+    //   console.log(minExperience,exp,"sjgjsdjndjn")
+    //   if(exp!=='' && minExperience!==exp){
+    //     filteredResults = totalListings.filter(job => job.location.toLowerCase().includes(location));
+    //     const final = filteredResults.filter(job => job.minExp >= minExperience);
+    //     dispatch(setFilteredListings(final));
+    //     console.log(filteredResults);
+    //   }
+    //   else dispatch(setFilteredListings(filteredResults));
+    //   dispatch(setExp(minExperience));
+      
+    // }
+    console.log(value.year,exp,"kshfsdkfk")
+    if(value && totalListings){
       const minExperience = value.year;
-      // console.log(minExperience);
-      const filteredListings = jobListings.filter(job => job.minExp >= minExperience); // Filter job listings based on minimum experience
-      dispatch(setFilteredListings(filteredListings));
-      // console.log(filteredListings);
+      dispatch(setExp(minExperience));
+      let filteredResults = totalListings.filter(job => job.minExp >= minExperience); // Filter job listings based on minimum experience
+      if(location!=='') filteredResults=filteredResults.filter(job => job.location.toLowerCase().includes(location));
+      if(minSalary!=='') filteredResults.filter(job => job.minJdSalary >= minSalary);
+      if(role!=='') filteredResults = filteredResults.filter(job => job.jobRole.toLowerCase().includes(role));
+      dispatch(setFilteredListings(filteredResults));
     }
   };
   

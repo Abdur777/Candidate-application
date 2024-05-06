@@ -2,10 +2,11 @@ import {useState} from 'react';
 import { Autocomplete, TextField,FormControl, InputLabel } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { setFilteredListings } from '../../store/reducers/jobListingsReducer';
+import { setRole } from '../../store/reducers/jobListingsReducer';
 
 const roles = [
   { role: 'Frontend', category: 'Engineering' },
-  { role: 'Backend ', category: 'Engineering' },
+  { role: 'Backend', category: 'Engineering' },
   { role: 'Fullstack', category: 'Engineering' },
   { role: 'IOS', category: 'Engineering' },
   { role: 'Flutter', category: 'Engineering' },
@@ -25,7 +26,7 @@ const roles = [
 ];
 
 export default function RoleSelect() {
-  const {jobListings} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
+  const {totalListings, role ,location, exp, minSalary} = useSelector((state) => state.jobListings); // Access jobListings from the Redux store
   const [isInputLabelVisible, setIsInputLabelVisible] = useState(true);
   const dispatch = useDispatch();
 
@@ -33,18 +34,24 @@ export default function RoleSelect() {
     if (reason === 'input') {
       setIsInputLabelVisible(false); // Hide InputLabel when user starts typing
     } else {
+      console.log(role,"sdfkhsdf")
+      // dispatch(setRole(''));
       setIsInputLabelVisible(!value); // Hide InputLabel when value is selected
     }
   };
 
   const handleRoleChange = (event, value) => {
-    // console.log(jobListings)
-    if (value && jobListings) {
-      const role = value.role.toLowerCase();
-      console.log(role)
+    console.log(role)
+    if (value && totalListings) {
+      const role_val = value.role.toLowerCase();
+      // console.log(role_val)
       // console.log(minSalary);
-      const filteredListings = jobListings.filter(job => job.jobRole.toLowerCase().includes(role)); // Filter job listings based on minimum experience
-      dispatch(setFilteredListings(filteredListings));
+      let filteredResults = totalListings.filter(job => job.jobRole.toLowerCase().includes(role_val)); // Filter job listings based on minimum experience
+      if(minSalary!=='')filteredResults = filteredResults.filter(job => job.minJdSalary >= minSalary); // Filter job listings based on minimum experience
+      if(location!=='') filteredResults=filteredResults.filter(job => job.location.toLowerCase().includes(location));
+      if(exp!='') filteredResults = filteredResults.filter(job => job.minExp>=exp);
+      dispatch(setRole(role_val))
+      dispatch(setFilteredListings(filteredResults));
       // console.log(filteredListings);
     }
   };
